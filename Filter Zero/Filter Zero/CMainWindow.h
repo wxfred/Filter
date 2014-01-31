@@ -1,19 +1,18 @@
 #ifndef CMAINWINDOW_H
 #define CMAINWINDOW_H
 
-#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMainWindow.h>
 #include "ui_MainWindow.h"
 
-class MainWindow : public QMainWindow
+class CMainWindow : public QMainWindow, Ui::MainWindowClass
 {
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget *parent = 0);
-	~MainWindow();
+	CMainWindow(QWidget *parent = 0);
+	~CMainWindow();
 
 private:
-	Ui::MainWindowClass ui;
 };
 
 #endif // CMAINWINDOW_H
