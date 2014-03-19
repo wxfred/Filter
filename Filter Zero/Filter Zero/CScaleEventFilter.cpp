@@ -20,6 +20,7 @@ CScaleEventFilter::CScaleEventFilter(QMainWindow *parent)
 	m_pMainWindow = NULL;
 	m_bLeftButtonDown = false;
 	m_eWindowRegionUnderMouse = CENTER;
+	m_bScalable = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -30,6 +31,10 @@ CScaleEventFilter::CScaleEventFilter(QMainWindow *parent)
 bool CScaleEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
 	m_pMainWindow = (QMainWindow *)obj;
+	
+	// Check whether window is scalable 
+	m_bScalable = true;
+	if (m_pMainWindow->minimumSize() == m_pMainWindow->maximumSize()) m_bScalable = false;
 	
 	switch (event->type())
 	{
@@ -76,16 +81,34 @@ void CScaleEventFilter::mouseMoveEvent(QMouseEvent *event)
 	{
 		QRect geometry = m_pMainWindow->geometry();
 		QPoint globalPos = event->globalPos();
+		int minWidth = m_pMainWindow->minimumWidth();
+		int maxWidth = m_pMainWindow->maximumWidth();
+		int minHeight = m_pMainWindow->minimumHeight();
+		int maxHeight = m_pMainWindow->maximumHeight();
+		int left, top, right, bottom;
+
 		switch (m_eWindowRegionUnderMouse)
 		{
 		case TOP_LEFT:
-			geometry.setTopLeft(QPoint(globalPos.x(), globalPos.y()));
+			left = globalPos.x();
+			top = globalPos.y();
+			if (geometry.right()-left+1 < minWidth) left = geometry.right() - minWidth + 1;
+			if (geometry.right()-left+1 > maxWidth) left = geometry.right() - maxWidth + 1;
+			if (geometry.bottom()-top+1 < minHeight) top = geometry.bottom() - minHeight + 1;
+			if (geometry.bottom()-top+1 > maxHeight) top = geometry.bottom() - maxHeight + 1;
+			geometry.setTopLeft(QPoint(left, top));
 			break;
 		case TOP:
-			geometry.setTop(globalPos.y());
+			top = globalPos.y();
+			if (geometry.bottom()-top+1 < minHeight) top = geometry.bottom() - minHeight + 1;
+			if (geometry.bottom()-top+1 > maxHeight) top = geometry.bottom() - maxHeight + 1;
+			geometry.setTop(top);
 			break;
 		case TOP_RIGHT:
-			geometry.setTopRight(QPoint(globalPos.x(),globalPos.y()));
+			top = globalPos.y();
+			if (geometry.bottom()-top+1 < minHeight) top = geometry.bottom() - minHeight + 1;
+			if (geometry.bottom()-top+1 > maxHeight) top = geometry.bottom() - maxHeight + 1;
+			geometry.setTopRight(QPoint(globalPos.x(), top));
 			break;
 		case RIGHT:
 			geometry.setRight(globalPos.x());
@@ -97,10 +120,16 @@ void CScaleEventFilter::mouseMoveEvent(QMouseEvent *event)
 			geometry.setBottom(globalPos.y());
 			break;
 		case BOTTOM_LEFT:
-			geometry.setBottomLeft(QPoint(globalPos.x(), globalPos.y()));
+			left = globalPos.x();
+			if (geometry.right()-left+1 < minWidth) left = geometry.right() - minWidth + 1;
+			if (geometry.right()-left+1 > maxWidth) left = geometry.right() - maxWidth + 1;
+			geometry.setBottomLeft(QPoint(left, globalPos.y()));
 			break;
 		case LEFT:
-			geometry.setLeft(globalPos.x());
+			left = globalPos.x();
+			if (geometry.right()-left+1 < minWidth) left = geometry.right() - minWidth + 1;
+			if (geometry.right()-left+1 > maxWidth) left = geometry.right() - maxWidth + 1;
+			geometry.setLeft(left);
 			break;
 		case CENTER:
 			geometry.moveTo(globalPos-m_posInWindow);
@@ -156,18 +185,22 @@ void CScaleEventFilter::setCursor(EWindowRegion region)
 	{
 	case TOP_LEFT:
 	case BOTTOM_RIGHT:
+		if (m_bScalable == false) break;
 		m_pMainWindow->setCursor(Qt::SizeFDiagCursor);
 		break;
 	case TOP:
 	case BOTTOM:
+		if (m_bScalable == false) break;
 		m_pMainWindow->setCursor(Qt::SizeVerCursor);
 		break;
 	case TOP_RIGHT:
 	case BOTTOM_LEFT:
+		if (m_bScalable == false) break;
 		m_pMainWindow->setCursor(Qt::SizeBDiagCursor);
 		break;
 	case RIGHT:
 	case LEFT:
+		if (m_bScalable == false) break;
 		m_pMainWindow->setCursor(Qt::SizeHorCursor);
 		break;
 	case CENTER:

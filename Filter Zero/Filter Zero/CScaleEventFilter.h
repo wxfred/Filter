@@ -38,6 +38,7 @@ private:
 	QPoint			m_posInWindow;
 	bool			m_bLeftButtonDown;
 	EWindowRegion	m_eWindowRegionUnderMouse;
+	bool			m_bScalable;
 };
 
 #endif

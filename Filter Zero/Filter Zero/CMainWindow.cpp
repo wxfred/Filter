@@ -17,6 +17,8 @@ CMainWindow::CMainWindow(QWidget *parent)
 	setAttribute(Qt::WA_TranslucentBackground, true);
 
 	installEventFilter(new CScaleEventFilter());
+
+	setFixedSize(800, 600);
 }
 
 // Destructor
