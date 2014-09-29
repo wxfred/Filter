@@ -18,13 +18,18 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 	installEventFilter(new CScaleEventFilter());
 
-	setFixedSize(800, 600);
+	//setFixedSize(800, 600);
 }
 
 // Destructor
 CMainWindow::~CMainWindow()
 {
 
+}
+
+void CMainWindow::setWidgetGlowingLight(GWidgetGlowingLight *widgetGlowingLight)
+{
+	m_pWidgetGlowingLight = widgetGlowingLight;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -35,4 +40,6 @@ void CMainWindow::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	painter.setBrush(Qt::white);
 	painter.drawRect(-1, -1, this->width()+1, this->height()+1);
+
+	if (m_pWidgetGlowingLight) m_pWidgetGlowingLight->onPaint();
 }
