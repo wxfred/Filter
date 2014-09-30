@@ -46,7 +46,6 @@ bool GWidgetGlowingLight::eventFilter(QObject *obj, QEvent *event)
 void GWidgetGlowingLight::paintGlowingLight(QColor color)
 {
 	QPainter painter(m_pWidget);
-	painter.setBrush(color);
-	painter.drawRect(-1, -1, m_pWidget->width()+1, m_pWidget->height()+1);
+	painter.fillRect(QRectF(0.0f, 0.0f, m_pWidget->width(), m_pWidget->height()), m_color);
 	m_pWidget->update();
 }
